@@ -1,4 +1,4 @@
-name: Deployment Continuo su Hugging Face
+    name: Deployment Continuo su Hugging Face
 
 on:
   workflow_run:
@@ -33,6 +33,10 @@ jobs:
           # Esegue il login usando il token
           huggingface-cli login --token $HF_TOKEN
           
-          # Carica TUTTO il contenuto della cartella del progetto nel tuo Space
-          # SOSTITUISCI "tuoUsernameHF/tuoNomeSpaceHF" con il tuo ID reale!
-          huggingface-cli upload gioottolins/drug_classification_app . --repo-type=space --commit-message="Deploy automatico da GitHub Actions"
+          # 1. Carica il CONTENUTO della cartella locale 'App' nella ROOT ('.') dello Space.
+          # Questo mette app_file, requirements.txt e README.md al posto giusto.
+          huggingface-cli upload gioottolins/drug_classification_app App/ --repo-type=space --path-in-repo=. --commit-message="Deploy app files"
+
+          # 2. Carica la cartella locale 'Model' in una cartella 'Model' nello Space.
+          # In questo modo l'app troverà il modello al percorso './Model/drug_pipeline.skops'
+          huggingface-cli upload gioottolins/drug_classification_app Model/ --repo-type=space --path-in-repo=Model --commit-message="Deploy model file"
