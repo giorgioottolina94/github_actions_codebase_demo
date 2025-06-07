@@ -7,7 +7,10 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-# La sezione 'permissions' è stata rimossa perché non più necessaria.
+# RE-INSERISCI QUESTA SEZIONE!
+# È necessaria per permettere a CML di scrivere un commento sul commit.
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -30,5 +33,3 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
-        
-      # IL PASSAGGIO "UPDATE BRANCH" È STATO COMPLETAMENTE RIMOSSO
