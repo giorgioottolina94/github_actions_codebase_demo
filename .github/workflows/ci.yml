@@ -7,17 +7,11 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-# Sezione dei permessi (esiste una sola volta, al livello giusto)
-permissions:
-  contents: write
+# La sezione 'permissions' è stata rimossa perché non più necessaria.
 
-# Sezione dei jobs (esiste una sola volta)
 jobs:
-  # Nome del job (esiste una sola volta)
   build:
     runs-on: ubuntu-latest
-    
-    # Lista dei passaggi (esiste una sola volta)
     steps:
       - uses: actions/checkout@v3
       
@@ -37,10 +31,4 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
         
-      - name: Update Branch
-        # Assicurati di aver impostato i secrets USER_NAME e USER_EMAIL
-        # nelle impostazioni del tuo repository se vuoi usare questo passaggio.
-        env:
-          NAME: ${{ secrets.USER_NAME }}
-          EMAIL: ${{ secrets.USER_EMAIL }}
-        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
+      # IL PASSAGGIO "UPDATE BRANCH" È STATO COMPLETAMENTE RIMOSSO
