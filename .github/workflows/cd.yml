@@ -3,7 +3,7 @@ name: Deployment Continuo su Hugging Face
 on:
   workflow_run:
     # Assicurati che il nome qui corrisponda al 'name' nel tuo file ci.yml
-    workflows: ["Integrazione Continua Modello ML"] 
+    workflows: ["Continuous Integration"] 
     types:
       - completed
 
