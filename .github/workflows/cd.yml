@@ -1,42 +1,37 @@
-    name: Deployment Continuo su Hugging Face
+# 'name' è all'inizio della riga
+name: Deployment Continuo su Hugging Face
 
+# 'on' è all'inizio della riga, su una nuova linea
 on:
+  # 'workflow_run' è indentato sotto 'on'
   workflow_run:
-    # Assicurati che il nome qui corrisponda al 'name' nel tuo file ci.yml
-    workflows: ["Continuous Integration"] 
+    # 'workflows' e 'types' sono indentati sotto 'workflow_run'
+    workflows: ["Continuous Integration"]
     types:
       - completed
 
+# 'jobs' è all'inizio della riga
 jobs:
+  # 'deploy_to_hf_space' è indentato sotto 'jobs'
   deploy_to_hf_space:
-    # Questo job si avvia solo se il workflow CI ha avuto successo
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-
+    
+    # 'steps' è indentato sotto 'deploy_to_hf_space'
     steps:
-      # 1. Fa il checkout del codice esatto che ha attivato la CI
+      # Ogni trattino '-' indica l'inizio di un nuovo passaggio ed è indentato sotto 'steps'
       - name: Checkout del codice
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      # 2. Installa lo strumento per comunicare con Hugging Face
       - name: Installa Hugging Face Hub
         run: pip install -U huggingface_hub
 
-      # 3. Esegue il login e carica i file
       - name: Carica file su Hugging Face Space
         env:
-          # Usa il nome del secret corretto: HF_TOKEN
-          HF_TOKEN: ${{ secrets.HF_TOKEN }} 
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Esegue il login usando il token
           huggingface-cli login --token $HF_TOKEN
-          
-          # 1. Carica il CONTENUTO della cartella locale 'App' nella ROOT ('.') dello Space.
-          # Questo mette app_file, requirements.txt e README.md al posto giusto.
           huggingface-cli upload gioottolins/drug_classification_app App/ --repo-type=space --path-in-repo=. --commit-message="Deploy app files"
-
-          # 2. Carica la cartella locale 'Model' in una cartella 'Model' nello Space.
-          # In questo modo l'app troverà il modello al percorso './Model/drug_pipeline.skops'
           huggingface-cli upload gioottolins/drug_classification_app Model/ --repo-type=space --path-in-repo=Model --commit-message="Deploy model file"
