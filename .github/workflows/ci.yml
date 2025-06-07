@@ -1,38 +1,45 @@
 name: Continuous Integration
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-      
-# AGGIUNGI QUESTA SEZIONE!
+
+# Sezione dei permessi (esiste una sola volta, al livello giusto)
 permissions:
   contents: write
 
+# Sezione dei jobs (esiste una sola volta)
 jobs:
+  # Nome del job (esiste una sola volta)
   build:
     runs-on: ubuntu-latest
-    steps:
-  
-permissions: write-all
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    
+    # Lista dei passaggi (esiste una sola volta)
     steps:
       - uses: actions/checkout@v3
+      
       - uses: iterative/setup-cml@v2
+      
       - name: Install Packages
         run: make install
+        
       - name: Format
         run: make format
+        
       - name: Train
         run: make train
+        
       - name: Evaluation
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
+        
       - name: Update Branch
+        # Assicurati di aver impostato i secrets USER_NAME e USER_EMAIL
+        # nelle impostazioni del tuo repository se vuoi usare questo passaggio.
         env:
           NAME: ${{ secrets.USER_NAME }}
           EMAIL: ${{ secrets.USER_EMAIL }}
