@@ -1,19 +1,38 @@
-name: Continuous Deployment
+name: Deployment Continuo su Hugging Face
+
 on:
   workflow_run:
-    workflows: ["Continuous Integration"]
+    # Assicurati che il nome qui corrisponda al 'name' nel tuo file ci.yml
+    workflows: ["Integrazione Continua Modello ML"] 
     types:
       - completed
 
-  workflow_dispatch:
-
 jobs:
-  build:
+  deploy_to_hf_space:
+    # Questo job si avvia solo se il workflow CI ha avuto successo
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Deployment To Hugging Face
+    steps:
+      # 1. Fa il checkout del codice esatto che ha attivato la CI
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      # 2. Installa lo strumento per comunicare con Hugging Face
+      - name: Installa Hugging Face Hub
+        run: pip install -U huggingface_hub
+
+      # 3. Esegue il login e carica i file
+      - name: Carica file su Hugging Face Space
         env:
-          HF: ${{ secrets.HF }}
-        run: make deploy HF=$HF
+          # Usa il nome del secret corretto: HF_TOKEN
+          HF_TOKEN: ${{ secrets.HF_TOKEN }} 
+        run: |
+          # Esegue il login usando il token
+          huggingface-cli login --token $HF_TOKEN
+          
+          # Carica TUTTO il contenuto della cartella del progetto nel tuo Space
+          # SOSTITUISCI "tuoUsernameHF/tuoNomeSpaceHF" con il tuo ID reale!
+          huggingface-cli upload gioottolins/drug_classification_app . --repo-type=space --commit-message="Deploy automatico da GitHub Actions"
